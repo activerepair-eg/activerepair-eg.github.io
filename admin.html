@@ -37,7 +37,14 @@ label{display:block;margin-top:14px;font-size:15px}
 <div class=card id=login><div style="text-align:center;font-weight:bold;margin-bottom:6px">دخول الإدارة</div>
 <input type=password id=pw placeholder="كلمة السر" autocomplete=current-password><div class=err id=le></div><button class=btn id=lb onclick="doLogin()">دخول</button>
 <div style="font-size:13px;color:#777;text-align:center;margin-top:10px">هتفضل مسجل دخول على الموبايل ده 30 يوم</div></div>
-<div id=main style="display:none"><div class=card><b>العملاء</b> <button class="btn s" style="width:auto;display:inline-block;padding:6px 14px;margin:0 10px" onclick="load()">تحديث</button><div id=list></div></div>
+<div id=main style="display:none"><div class=card><b>العملاء</b> <button class="btn s" style="width:auto;display:inline-block;padding:6px 14px;margin:0 10px" onclick="load()">تحديث</button><button class="btn" style="margin-bottom:6px" onclick="editC(null)">+ عميل جديد</button><div id=list></div></div>
+<div class=card id=ed style="display:none"><div id=et style="font-weight:bold"></div>
+<label>الاسم<input type=text id=f_name></label><label>رقم الموبايل<input type=tel id=f_phone></label><label>العنوان<input type=text id=f_address></label>
+<label>الجهاز<input type=text id=f_device></label><label>العطل<textarea id=f_fault rows=2></textarea></label>
+<label>الحالة<input type=text id=f_status list=stl></label><datalist id=stl><option value="تحت الفحص"><option value="بتتصلح"><option value="مستني قطعة غيار"><option value="جاهز للاستلام"><option value="تم التسليم"></datalist>
+<label>السعر (جنيه)<input type=tel id=f_price></label><label>المدفوع (جنيه)<input type=tel id=f_paid></label>
+<label>ملاحظات (قطع الغيار وغيرها)<textarea id=f_notes rows=3></textarea></label>
+<button class="btn" onclick="saveC()">حفظ</button><button class="btn s" onclick="$('ed').style.display='none'">إلغاء</button><div id=es class=err></div></div>
 <div class=card id=up style="display:none"><div id=ut style="font-weight:bold"></div>
 <label>نوع الصورة<select id=ty></select></label>
 <label>اختار الصور<input type=file id=fi accept="image/*" multiple style="width:100%;margin-top:6px"></label>
@@ -59,7 +66,7 @@ function doLogin(){var pw=$("pw").value;if(!pw)return;$("le").textContent="";$("
 call("login",[pw]).then(function(r){$("lb").disabled=false;if(r.error){$("le").textContent=r.error;return}TOK=r.token;localStorage.setItem("ar_tok",TOK);$("pw").value="";showMain()}).catch(function(){$("lb").disabled=false;$("le").textContent="حصل خطأ، حاول تاني"})}
 function sess(r){if(r&&r.error==="session"){localStorage.removeItem("ar_tok");TOK=null;showLogin("الجلسة خلصت، ادخل تاني");return false}return true}
 function load(){call("list",[TOK]).then(function(r){if(!sess(r))return;var l=r.r||[];LIST=l;
-$("list").innerHTML=l.length?l.map(function(c,i){return "<div class='cu"+(CUR==c.code?" sel":"")+"' onclick='pick("+i+")'><b>"+esc(c.name)+"</b> - "+esc(c.device)+"<small>الكود: "+c.code+" | "+esc(c.status)+(c.approved?" | موافق":"")+"</small><a class='btn w' style='padding:9px;font-size:14px' target='_blank' onclick='event.stopPropagation()' href='"+c.wa+"'>إرسال رابط المتابعة على واتساب</a></div>"}).join(""):"مفيش عملاء"}).catch(function(){$("list").textContent="مفيش اتصال، حاول تاني"})}
+$("list").innerHTML=l.length?l.map(function(c,i){return "<div class='cu"+(CUR==c.code?" sel":"")+"' onclick='pick("+i+")'><b>"+esc(c.name)+"</b> - "+esc(c.device)+"<small>الكود: "+c.code+" | "+esc(c.status)+(c.approved?" | موافق":"")+"</small><button class='btn s' style='padding:9px;font-size:14px' onclick='event.stopPropagation();editC(\""+c.code+"\")'>تعديل البيانات</button><a class='btn w' style='padding:9px;font-size:14px' target='_blank' onclick='event.stopPropagation()' href='"+c.wa+"'>إرسال رابط المتابعة على واتساب</a></div>"}).join(""):"مفيش عملاء"}).catch(function(){$("list").textContent="مفيش اتصال، حاول تاني"})}
 function pick(i){var code=LIST[i].code,name=LIST[i].name;CUR=code;$("up").style.display="block";$("ut").textContent="صور العميل: "+name+" ("+code+")";
 $("ty").innerHTML=Object.keys(LABELS).map(function(k){return "<option value="+k+">"+LABELS[k]+"</option>"}).join("");load();photos();$("up").scrollIntoView({behavior:"smooth"})}
 function photos(){$("pl").innerHTML="";call("photos",[TOK,CUR]).then(function(r){if(!sess(r))return;
@@ -72,6 +79,12 @@ $("us").textContent="جاري رفع "+(i+1)+" من "+fs.length;
 shrink(fs[i++],function(d){call("upload",[TOK,CUR,t,d]).then(function(r){if(!sess(r))return;if(r&&r.error){$("us").textContent=r.error;return}next()}).catch(function(){$("us").textContent="فشل الرفع"})})})()}
 function logout(){call("logout",[TOK]).then(function(){localStorage.removeItem("ar_tok");TOK=null;showLogin("")}).catch(function(){localStorage.removeItem("ar_tok");showLogin("")})}
 function revokeAll(){if(!confirm("تخرج من كل الأجهزة؟"))return;call("revokeall",[TOK]).then(function(){localStorage.removeItem("ar_tok");TOK=null;showLogin("تم الخروج من كل الأجهزة")})}
+var EC=null,FF=["name","phone","address","device","fault","status","price","paid","notes"];
+function editC(code){EC=code;$("es").textContent="";$("ed").style.display="block";$("et").textContent=code?"تعديل بيانات العميل":"عميل جديد";
+FF.forEach(function(k){$("f_"+k).value=""});if(!code){$("f_status").value="تحت الفحص";$("ed").scrollIntoView({behavior:"smooth"});return}
+call("get",[TOK,code]).then(function(r){if(!sess(r))return;r=r.r;if(!r||r.error){$("es").textContent="حصل خطأ";return}FF.forEach(function(k){$("f_"+k).value=r[k]||""});$("ed").scrollIntoView({behavior:"smooth"})})}
+function saveC(){var d={};FF.forEach(function(k){d[k]=$("f_"+k).value});$("es").style.color="#555";$("es").textContent="جاري الحفظ...";
+call("save",[TOK,EC,d]).then(function(r){if(!sess(r))return;if(r.error){$("es").style.color="";$("es").textContent=r.error;return}$("ed").style.display="none";load()}).catch(function(){$("es").style.color="";$("es").textContent="فشل الحفظ، حاول تاني"})}
 if(TOK)showMain();
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(function(){});
 
