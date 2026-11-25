@@ -55,7 +55,7 @@ function show(r){var o=$("o");
 if(!r||r.error){o.innerHTML="<div class=err>"+esc(r&&r.error?r.error:"مفيش نتيجة، راجع البيانات واكتبها تاني")+"</div>";return}
 if(r.choose){o.innerHTML="<div style=margin-top:8px>اختار جهازك:</div>"+r.choose.map(function(c){return "<button class=\"btn s\" onclick=\"byRef('"+c.ref+"')\">"+esc(c.device)+"</button>"}).join("");return}
 REF=r.ref;
-var h="<div style=margin-top:8px><div class=row><span>الجهاز</span><b>"+esc(r.device)+"</b></div><div class=row><span>الحالة</span><b>"+esc(r.status)+"</b></div><div class=row><span>السعر المقترح</span><b class=price>"+esc(r.price)+"</b></div></div>";
+var h="<div style=margin-top:8px><div class=row><span>الجهاز</span><b>"+esc(r.device)+"</b></div><div class=row><span>الحالة</span><b>"+esc(r.status)+"</b></div><div class=row><span>السعر المقترح</span><b class=price>"+esc(r.price)+"</b></div>"+(r.parts?"<div class=row><span>قطع الغيار</span><b>"+esc(r.parts)+"</b></div>":"")+"</div>";
 h+=groups(r.photos||[]);
 if(r.approved){h+="<div class=ok>تمت موافقتك على التعليمات</div>"}else{
 h+="<div class=terms><h3>تعليمات الصيانة</h3><ul>"+r.terms.map(function(t){return "<li>"+esc(t)+"</li>"}).join("")+"</ul></div><label><input type=checkbox id=a> موافق على التعليمات السابقة والسعر</label><button class=\"btn g\" onclick=\"ap()\">تأكيد الموافقة</button>"}
