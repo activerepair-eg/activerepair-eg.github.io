@@ -43,7 +43,7 @@ label{display:block;margin-top:14px;font-size:15px}
 <label>الجهاز<input type=text id=f_device></label><label>العطل<textarea id=f_fault rows=2></textarea></label>
 <label>الحالة<input type=text id=f_status list=stl></label><datalist id=stl><option value="تحت الفحص"><option value="بتتصلح"><option value="مستني قطعة غيار"><option value="جاهز للاستلام"><option value="تم التسليم"></datalist>
 <label>السعر (جنيه)<input type=tel id=f_price></label><label>المدفوع (جنيه)<input type=tel id=f_paid></label>
-<label>ملاحظات (قطع الغيار وغيرها)<textarea id=f_notes rows=3></textarea></label>
+<label>قطع الغيار<textarea id=f_parts rows=2></textarea></label><label>ملاحظات<textarea id=f_notes rows=3></textarea></label>
 <button class="btn" onclick="saveC()">حفظ</button><button class="btn s" onclick="$('ed').style.display='none'">إلغاء</button><div id=es class=err></div></div>
 <div class=card id=up style="display:none"><div id=ut style="font-weight:bold"></div>
 <label>نوع الصورة<select id=ty></select></label>
@@ -81,7 +81,7 @@ $("us").textContent="جاري رفع "+(i+1)+" من "+fs.length;
 shrink(fs[i++],function(d){call("upload",[TOK,CUR,t,d]).then(function(r){if(!sess(r))return;if(r&&r.error){$("us").textContent=r.error;return}next()}).catch(function(){$("us").textContent="فشل الرفع"})})})()}
 function logout(){call("logout",[TOK]).then(function(){localStorage.removeItem("ar_tok");TOK=null;showLogin("")}).catch(function(){localStorage.removeItem("ar_tok");showLogin("")})}
 function revokeAll(){if(!confirm("تخرج من كل الأجهزة؟"))return;call("revokeall",[TOK]).then(function(){localStorage.removeItem("ar_tok");TOK=null;showLogin("تم الخروج من كل الأجهزة")})}
-var EC=null,FF=["name","phone","address","device","fault","status","price","paid","notes"];
+var EC=null,FF=["name","phone","address","device","fault","status","price","paid","parts","notes"];
 function editC(code){EC=code;$("es").textContent="";$("ed").style.display="block";$("et").textContent=code?"تعديل بيانات العميل":"عميل جديد";
 FF.forEach(function(k){$("f_"+k).value=""});if(!code){$("f_status").value="تحت الفحص";$("ed").scrollIntoView({behavior:"smooth"});return}
 call("get",[TOK,code]).then(function(r){if(!sess(r))return;r=r.r;if(!r||r.error){$("es").textContent="حصل خطأ";return}FF.forEach(function(k){$("f_"+k).value=r[k]||""});$("ed").scrollIntoView({behavior:"smooth"})})}
