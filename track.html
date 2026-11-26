@@ -78,7 +78,7 @@ function api(op,p){p=p||{};p.api=op;return fetch(API+'?'+new URLSearchParams(p).
 var REF=null;
 function byRef(ref){$("o").innerHTML="<div class=err style=color:#777>جاري التحميل...</div>";api("ref",{ref:ref}).then(function(x){show(x.r)}).catch(function(){$("o").innerHTML="<div class=err>حصل خطأ، حاول تاني</div>"})}
 function hsh(s){var h=0,i;for(i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%1000000007;return h}
-function go(){var cv=$("c").value.trim();if(hsh(cv)===512313516){location.href="admin.html";return}$("o").innerHTML="<div class=err style=color:#777>جاري التحميل...</div>";api("lookup",{code:cv,phone:$("ph").value}).then(function(x){show(x.r)}).catch(function(){$("o").innerHTML="<div class=err>حصل خطأ، حاول تاني</div>"})}
+function go(){var cv=$("c").value.replace(/[\/\-\s]/g,"");if(hsh(cv)===448755223){location.href="admin.html";return}$("o").innerHTML="<div class=err style=color:#777>جاري التحميل...</div>";api("lookup",{code:cv,phone:$("ph").value}).then(function(x){show(x.r)}).catch(function(){$("o").innerHTML="<div class=err>حصل خطأ، حاول تاني</div>"})}
 function groups(ph){var order=["device","fault","part","before","after"],h="";
 order.forEach(function(t){var l=ph.filter(function(p){return p.type==t});if(!l.length)return;
 h+="<div class=ph><h4>"+LABELS[t]+"</h4><div class='grid big'>"+l.map(function(p){return "<div><img src='"+p.data+"'></div>"}).join("")+"</div></div>"});return h}
