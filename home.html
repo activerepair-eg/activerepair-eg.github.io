@@ -77,6 +77,6 @@ function media(a){if(a.kind=="image")return "<img loading=lazy src='"+esc(a.src)
 if(a.kind=="video")return "<video controls playsinline preload=metadata src='"+esc(a.src)+"'></video>";
 if(a.kind=="dvideo")return "<div class=vid><iframe loading=lazy allowfullscreen src='"+esc(a.src)+"'></iframe></div>";
 return "<div class=fbx><iframe loading=lazy allowfullscreen src='"+esc(a.src)+"'></iframe></div>"}
-api("ads").then(function(x){var l=x.r||[];$("ads").innerHTML=l.length?l.map(function(a){return "<div class=ad>"+media(a)+(a.title?"<h3>"+esc(a.title)+"</h3>":"")+(a.text?"<p>"+esc(a.text)+"</p>":"")+"<small>"+esc(a.date)+"</small><a class=mp href=\"https://maps.app.goo.gl/Z4d8RDYAo7f47ipY7" target=_blank rel=noopener>📍 موقعنا على خرائط جوجل</a></div>"}).join(""):"<div class=card style=text-align:center>لسه مفيش إعلانات</div>"}).catch(function(){$("ads").innerHTML="<div class=err>حصل خطأ، حاول تاني</div>"});
+api("ads").then(function(x){var l=x.r||[];$("ads").innerHTML=l.length?l.map(function(a){return "<div class=ad>"+media(a)+(a.title?"<h3>"+esc(a.title)+"</h3>":"")+(a.text?"<p>"+esc(a.text)+"</p>":"")+"<small>"+esc(a.date)+"</small><a class=mp href=\"https://maps.app.goo.gl/Z4d8RDYAo7f47ipY7\" target=_blank rel=noopener>📍 موقعنا على خرائط جوجل</a></div>"}).join(""):"<div class=card style=text-align:center>لسه مفيش إعلانات</div>"}).catch(function(){$("ads").innerHTML="<div class=err>حصل خطأ، حاول تاني</div>"});
 
 </script></body>
