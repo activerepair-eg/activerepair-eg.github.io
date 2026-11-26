@@ -41,6 +41,31 @@ label{display:block;margin-top:14px;font-size:15px}
 <div id=ads><div class=err style=color:#777>جاري التحميل...</div></div>
 <div class=ft>العنوان: سيتي مول (بجانب المدرسة العسكرية - مدينة المستقبل - الشروق)<br>التليفون: 01555481669 - 01143453966 - 01036663344</div>
 </div>
+<style>
+body{padding-bottom:84px}
+#cb{position:fixed;left:14px;bottom:14px;z-index:50;font-family:Tahoma,Arial,sans-serif;direction:rtl}
+#cb .bub{width:54px;height:54px;border-radius:50%;background:#25a244;border:0;box-shadow:0 3px 10px rgba(0,0,0,.3);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+#cb .pn{display:none;position:absolute;left:0;bottom:64px;width:min(300px,calc(100vw - 28px));background:#fff;border-radius:16px;box-shadow:0 4px 18px rgba(0,0,0,.3);overflow:hidden}
+#cb.open .pn{display:block}
+#cb .ph2{background:#25a244;color:#fff;padding:12px 14px;font-weight:bold;font-size:15px}
+#cb .bd{padding:12px}
+#cb .ch{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+#cb .ch button{border:2px solid #e3d6cc;background:#fff;border-radius:18px;padding:7px 12px;font-size:14px;font-family:inherit;cursor:pointer}
+#cb .ch button.on{border-color:#25a244;background:#e6f4ee;color:#1E7B5A}
+#cb textarea{min-height:60px;margin-top:0;font-size:15px;padding:9px}
+#cb .go{margin-top:8px;padding:11px;font-size:15px;background:#25a244}
+#cb.hide{display:none}
+</style>
+<div id="cb"><div class="pn"><div class="ph2">كلمنا على واتساب</div><div class="bd"><div class="ch" id="cbc"><button type="button">استفسار عن جهاز</button><button type="button">حجز زيارة</button><button type="button">متابعة طلب</button><button type="button">حاجة تانية</button></div><textarea id="cbt" maxlength="300" placeholder="اكتب رسالتك (اختياري)"></textarea><button type="button" class="btn go" id="cbg">ابعت على واتساب</button></div></div><button type="button" class="bub" id="cbb" aria-label="chat"><svg width="30" height="30" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.2 13.7c-.2.6-1.300 1.200-1.800 1.200-.5.1-1 .2-3.300-.7-2.800-1.100-4.500-4-4.700-4.200-.1-.2-1.100-1.500-1.100-2.800s.7-2 1-2.300c.2-.3.500-.3.700-.3h.5c.2 0 .4 0 .6.500l.9 2.200c.1.200.1.400 0 .5l-.4.600c-.2.200-.3.400-.1.700.2.300.8 1.300 1.700 2.100 1.100 1 2.100 1.300 2.400 1.400.3.100.5.100.7-.1l.9-1.100c.2-.3.4-.2.700-.1l2 1c.3.100.5.200.5.300.1.200.1.800-.1 1.300z"/></svg></button></div>
+<script>
+(function(){var cb=document.getElementById("cb"),sel="",M={"استفسار عن جهاز":"عايز أستفسر عن جهاز","حجز زيارة":"عايز أحجز زيارة إصلاح في المنزل","متابعة طلب":"عايز أتابع طلب","حاجة تانية":"عندي استفسار تاني"};
+document.getElementById("cbb").onclick=function(){cb.classList.toggle("open")};
+[].forEach.call(document.querySelectorAll("#cbc button"),function(b){b.onclick=function(){sel=b.textContent;[].forEach.call(document.querySelectorAll("#cbc button"),function(x){x.classList.toggle("on",x===b)})}});
+document.getElementById("cbg").onclick=function(){var t=document.getElementById("cbt").value.trim(),m="أهلاً Active Repair\n"+(sel?M[sel]:(t?"":M["حاجة تانية"]))+(t?(sel?"\n":"")+t:"");window.open("https://wa.me/201143453966?text="+encodeURIComponent(m.trim()),"_blank")};
+document.addEventListener("focusin",function(e){if(!cb.contains(e.target)&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))cb.classList.add("hide")});
+document.addEventListener("focusout",function(e){if(!cb.contains(e.target))setTimeout(function(){if(!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||""))cb.classList.remove("hide")},200)});
+})();
+</script>
 <script>
 var LABELS={device:"صورة الجهاز",fault:"صورة العطل",part:"صورة القطعة",before:"قبل الإصلاح",after:"بعد الإصلاح"};
 function esc(t){var d=document.createElement("div");d.textContent=t==null?"":t;return d.innerHTML}
