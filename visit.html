@@ -46,7 +46,7 @@ label{display:block;margin-top:14px;font-size:15px}
 <div class=err style="text-align:right;background:#fdecea;border-radius:10px;padding:10px;margin-top:10px">تنبيه سخان الغاز: لو شامم ريحة غاز، اقفل الغاز وافتح الشبابيك الأول، وبعد كده كلمنا.</div></div>
 <div class=card id=f>
 <div style="font-size:18px;font-weight:bold;color:#E2501F;text-align:center">طلب زيارة</div>
-<label>الاسم (ثلاثي كامل)<input type=text id=n maxlength=60></label>
+<label>الاسم<input type=text id=n maxlength=60></label>
 <label>رقم الموبايل<input type=tel id=p maxlength=15 inputmode=numeric></label>
 <label>العنوان بالتفصيل (شارع، عمارة، دور، شقة)<textarea id=ad maxlength=200></textarea></label>
 <label>المنطقة<input type=text id=ar maxlength=60></label>
@@ -57,7 +57,7 @@ label{display:block;margin-top:14px;font-size:15px}
 <input type=text id=hp style="display:none" tabindex=-1 autocomplete=off>
 <div class=err id=e></div>
 <button class=btn id=b onclick="send()">إرسال الطلب</button></div>
-<div class=card id=done style="display:none;text-align:center"><div style="font-weight:bold">تم تسجيل طلب الزيارة</div><div>كود المتابعة بتاعك:</div><div class=code id=cd></div><div style="font-size:14px;color:#555">ابعت الطلب على واتساب علشان نأكد معاك الميعاد. الكود بيعرض الحالة العامة بس، ولعرض السعر والتفاصيل اكتب اسمك الثلاثي ورقم موبايلك.</div><a class="btn w" id=wa target=_blank>ابعت الطلب على واتساب</a><a class="btn" id=lk target=_blank>متابعة الطلب</a></div>
+<div class=card id=done style="display:none;text-align:center"><div style="font-weight:bold">تم تسجيل طلب الزيارة</div><div>كود المتابعة بتاعك:</div><div class=code id=cd></div><div style="font-size:14px;color:#555">ابعت الطلب على واتساب علشان نأكد معاك الميعاد. ولعرض الحالة والسعر والتفاصيل: اكتب الكود ورقم موبايلك في صفحة المتابعة ووافق على التعليمات.</div><a class="btn w" id=wa target=_blank>ابعت الطلب على واتساب</a><a class="btn" id=lk target=_blank>متابعة الطلب</a></div>
 <div class=ft>العنوان: سيتي مول (بجانب المدرسة العسكرية - مدينة المستقبل - الشروق)<br>التليفون: 01555481669 - 01143453966 - 01036663344<br><a href="https://maps.app.goo.gl/Z4d8RDYAo7f47ipY7" target="_blank" rel="noopener" style="color:#888;font-size:12px">📍 موقعنا على خرائط جوجل</a></div>
 </div>
 <style>
@@ -95,7 +95,6 @@ function api(op,p){p=p||{};p.api=op;return fetch(API+'?'+new URLSearchParams(p).
 $("ap").onchange=function(){$("gw").style.display=$("ap").value=="سخان غاز"?"block":"none"};
 function send(){var d={name:$("n").value.trim(),phone:$("p").value.trim(),address:$("ad").value.trim(),area:$("ar").value.trim(),appliance:$("ap").value,problem:$("ft").value.trim(),time:$("tm").value.trim(),website:$("hp").value};
 if(!d.name||!d.phone||!d.address||!d.area||!d.appliance||!d.problem||!d.time){$("e").textContent="كمّل كل البيانات";return}
-if(d.name.split(/\s+/).length<3){$("e").textContent="اكتب الاسم ثلاثي كامل";return}
 $("b").disabled=true;$("e").textContent="";
 api("visit",d).catch(function(){return {error:"حصل خطأ، حاول تاني"}}).then(function(r){
 if(r.error){$("b").disabled=false;$("e").textContent=r.error;return}
