@@ -82,12 +82,9 @@ function go(){var cv=$("c").value.replace(/[\/\-\s]/g,"");if(hsh(cv)===448755223
 function groups(ph){var order=["device","fault","part","before","after"],h="";
 order.forEach(function(t){var l=ph.filter(function(p){return p.type==t});if(!l.length)return;
 h+="<div class=ph><h4>"+LABELS[t]+"</h4><div class='grid big'>"+l.map(function(p){return "<div><img src='"+p.data+"'></div>"}).join("")+"</div></div>"});return h}
-var LREF=null;
-function und(x){if(!x||x.error){$("ue").textContent=x&&x.error?x.error:"مفيش نتيجة، راجع الاسم ورقم الموبايل";return}show(x)}
-function unl(){$("ue").textContent="";api("unlock",{ref:LREF,name:$("un").value,phone:$("uph").value}).then(function(x){und(x.r)}).catch(function(){$("ue").textContent="حصل خطأ، حاول تاني"})}
 function show(r){var o=$("o");
 if(!r||r.error){o.innerHTML="<div class=err>"+esc(r&&r.error?r.error:"مفيش نتيجة، راجع الاسم ورقم الموبايل")+"</div>";return}
-if(r.limited){LREF=r.ref;o.innerHTML="<div style=margin-top:8px><div class=row><span>الحالة</span><b>"+esc(r.status)+"</b></div></div><div class=terms style=margin-top:10px>لعرض التفاصيل: اكتب اسمك ورقم موبايلك</div><input type=text id=un placeholder=\"الاسم\" style=\"margin-top:8px\"><input type=tel id=uph placeholder=\"رقم الموبايل\" style=\"margin-top:8px\"><button class=btn onclick=unl()>فتح التفاصيل</button><div id=ue class=err></div>";return}
+if(r.limited){o.innerHTML="<div style=margin-top:8px><div class=row><span>الحالة</span><b>"+esc(r.status)+"</b></div></div><div class=terms style=margin-top:10px>لعرض السعر والتفاصيل: اكتب رقم موبايلك في خانة الموبايل فوق واضغط عرض</div>";$("ph").focus();return}
 if(r.choose){o.innerHTML="<div style=margin-top:8px>اختار جهازك:</div>"+r.choose.map(function(c){return "<button class=\"btn s\" onclick=\"byRef('"+c.ref+"')\">"+esc(c.device)+"</button>"}).join("");return}
 REF=r.ref;
 if(r.gate){o.innerHTML="<div style=margin-top:8px><div class=terms><h3>"+(r.visit?"شروط الزيارة":"تعليمات الصيانة")+"</h3><ul>"+r.terms.map(function(t){return "<li>"+esc(t)+"</li>"}).join("")+"</ul></div><label><input type=checkbox id=a> موافق على التعليمات السابقة</label><button class=\"btn g\" onclick=\"ap()\">موافق، عرض حالة جهازي</button></div>";return}
