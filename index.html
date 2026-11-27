@@ -44,7 +44,7 @@ label{display:block;margin-top:14px;font-size:15px}
 <div style="font-size:13px;color:#777;text-align:center;margin-top:10px">الإصلاح في المنزل متاح للثلاجة والغسالة فوق أوتوماتيك وسخان الغاز بس</div></div>
 <div class=card id=f style="display:none">
 <div style="font-size:18px;font-weight:bold;color:#E2501F;text-align:center">تسجيل جهاز جديد</div>
-<label>الاسم (ثلاثي كامل)<input type=text id=n maxlength=60></label>
+<label>الاسم<input type=text id=n maxlength=60></label>
 <label>رقم الموبايل<input type=tel id=p maxlength=15 inputmode=numeric></label>
 <label>العنوان<input type=text id=ad maxlength=120></label>
 <label>الجهاز<select id=ds><option value="">اختار الجهاز</option><option>ثلاجة</option><option value="other">جهاز آخر</option></select></label><input type=text id=d maxlength=80 placeholder="اكتب اسم الجهاز (مثال: خلاط، مروحة)" style="display:none">
@@ -52,7 +52,7 @@ label{display:block;margin-top:14px;font-size:15px}
 <input type=text id=hp style="display:none" tabindex=-1 autocomplete=off>
 <div class=err id=e></div>
 <button class=btn id=b onclick="send()">تسجيل</button></div>
-<div class=card id=done style="display:none;text-align:center"><div style="font-weight:bold">تم تسجيل جهازك</div><div>كود المتابعة بتاعك:</div><div class=code id=cd></div><div style="font-size:14px;color:#555">اكتب الكود ده على الجهاز واحتفظ بيه. الكود بيعرض الحالة العامة بس، ولعرض السعر والتفاصيل اكتب اسمك الثلاثي ورقم موبايلك.</div><a class="btn" id=lk target=_blank>متابعة الجهاز</a></div>
+<div class=card id=done style="display:none;text-align:center"><div style="font-weight:bold">تم تسجيل جهازك</div><div>كود المتابعة بتاعك:</div><div class=code id=cd></div><div style="font-size:14px;color:#555">اكتب الكود ده على الجهاز واحتفظ بيه. ولعرض الحالة والسعر والتفاصيل: اكتب الكود ورقم موبايلك في صفحة المتابعة ووافق على التعليمات.</div><a class="btn" id=lk target=_blank>متابعة الجهاز</a></div>
 <div class=ft>العنوان: سيتي مول (بجانب المدرسة العسكرية - مدينة المستقبل - الشروق)<br>التليفون: 01555481669 - 01143453966 - 01036663344<br><a href="https://maps.app.goo.gl/Z4d8RDYAo7f47ipY7" target="_blank" rel="noopener" style="color:#888;font-size:12px">📍 موقعنا على خرائط جوجل</a></div>
 </div>
 <style>
@@ -93,7 +93,6 @@ function pickC(){$("ch").style.display="none";$("f").style.display="block"}
 if(location.search.indexOf("m=center")>=0)pickC();
 function send(){var d={name:$("n").value.trim(),phone:$("p").value.trim(),address:$("ad").value.trim(),device:($("ds").value=="other"?$("d").value.trim():$("ds").value),fault:$("ft").value.trim(),website:$("hp").value};
 if(!d.name||!d.phone||!d.device||!d.fault){$("e").textContent="كمّل كل البيانات";return}
-if(d.name.split(/\s+/).length<3){$("e").textContent="اكتب الاسم ثلاثي كامل";return}
 $("b").disabled=true;$("e").textContent="";
 api("register",d).catch(function(){return {error:"حصل خطأ، حاول تاني"}}).then(function(r){
 if(r.error){$("b").disabled=false;$("e").textContent=r.error;return}
