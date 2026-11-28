@@ -75,7 +75,7 @@ function $(i){return document.getElementById(i)}
 var API='https://script.google.com/macros/s/AKfycbyNAYdWDuPz1TXULE2G6oUrCoZwYs9N7IEtLs94ZktOOwLQAaDe_Akph-JXoHISzxdUpA/exec';
 function api(op,p){p=p||{};p.api=op;return fetch(API+'?'+new URLSearchParams(p).toString()).then(function(r){return r.json()})}
 
-var REF=null;
+var REF=null,PREV=false;
 function byRef(ref){$("o").innerHTML="<div class=err style=color:#777>جاري التحميل...</div>";api("ref",{ref:ref}).then(function(x){show(x.r)}).catch(function(){$("o").innerHTML="<div class=err>حصل خطأ، حاول تاني</div>"})}
 function hsh(s){var h=0,i;for(i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%1000000007;return h}
 function go(){var cv=$("c").value.replace(/[\/\-\s]/g,"");if(hsh(cv)===448755223){location.href="admin.html";return}$("o").innerHTML="<div class=err style=color:#777>جاري التحميل...</div>";api("lookup",{code:cv,phone:$("ph").value}).then(function(x){show(x.r)}).catch(function(){$("o").innerHTML="<div class=err>حصل خطأ، حاول تاني</div>"})}
@@ -86,17 +86,17 @@ function show(r){var o=$("o");
 if(!r||r.error){o.innerHTML="<div class=err>"+esc(r&&r.error?r.error:"مفيش نتيجة، راجع الاسم ورقم الموبايل")+"</div>";return}
 if(r.limited){o.innerHTML="<div style=margin-top:8px><div class=row><span>الحالة</span><b>"+esc(r.status)+"</b></div></div><div class=terms style=margin-top:10px>لعرض السعر والتفاصيل: اكتب رقم موبايلك في خانة الموبايل فوق واضغط عرض</div>";$("ph").focus();return}
 if(r.choose){o.innerHTML="<div style=margin-top:8px>اختار جهازك:</div>"+r.choose.map(function(c){return "<button class=\"btn s\" onclick=\"byRef('"+c.ref+"')\">"+esc(c.device)+"</button>"}).join("");return}
-REF=r.ref;
+REF=r.ref;PREV=!!r.preview;
 if(r.gate){o.innerHTML="<div style=margin-top:8px><div class=terms><h3>"+(r.visit?"شروط الزيارة":"تعليمات الصيانة")+"</h3><ul>"+r.terms.map(function(t){return "<li>"+esc(t)+"</li>"}).join("")+"</ul></div><label><input type=checkbox id=a> موافق على التعليمات السابقة</label><button class=\"btn g\" onclick=\"ap()\">موافق، عرض حالة جهازي</button></div>";return}
-var h="<div style=margin-top:8px>"+(r.visit?"<div class=row><span>نوع الطلب</span><b>إصلاح في المنزل</b></div>":"")+"<div class=row><span>الجهاز</span><b>"+esc(r.device)+"</b></div><div class=row><span>الحالة</span><b>"+esc(r.status)+"</b></div><div class=row><span>السعر المقترح</span><b class=price>"+esc(r.price)+"</b></div>"+(r.parts?"<div class=row><span>قطع الغيار</span><b>"+esc(r.parts)+"</b></div>":"")+(r.visit&&r.area?"<div class=row><span>المنطقة</span><b>"+esc(r.area)+"</b></div>":"")+(r.visit&&r.time?"<div class=row><span>الميعاد المطلوب</span><b>"+esc(r.time)+"</b></div>":"")+"</div>";
+var h=(r.preview?"<div class=terms style=margin-top:8px;text-align:center>معاينة المالك (للعرض فقط، مفيش أي موافقة بتتسجل)</div>":"")+"<div style=margin-top:8px>"+(r.visit?"<div class=row><span>نوع الطلب</span><b>إصلاح في المنزل</b></div>":"")+"<div class=row><span>الجهاز</span><b>"+esc(r.device)+"</b></div><div class=row><span>الحالة</span><b>"+esc(r.status)+"</b></div><div class=row><span>السعر المقترح</span><b class=price>"+esc(r.price)+"</b></div>"+(r.parts?"<div class=row><span>قطع الغيار</span><b>"+esc(r.parts)+"</b></div>":"")+(r.visit&&r.area?"<div class=row><span>المنطقة</span><b>"+esc(r.area)+"</b></div>":"")+(r.visit&&r.time?"<div class=row><span>الميعاد المطلوب</span><b>"+esc(r.time)+"</b></div>":"")+"</div>";
 h+=groups(r.photos||[]);
-h+="<div class=ok>تمت موافقتك على التعليمات</div>";
+if(!r.preview)h+="<div class=ok>تمت موافقتك على التعليمات</div>";
 if(r.pd==="ok"){h+="<div class=ok>تمت موافقتك على السعر</div>"}
 else if(r.pd==="no"){h+="<div class=err>رفضت السعر المقترح، وهيتم التواصل معاك</div>"}
-else if(r.priceSet){h+="<div class=terms><h3>الموافقة على السعر</h3><div style=line-height:1.8>السعر المقترح للإصلاح: <b class=price>"+esc(r.price)+"</b>"+(r.parts?"<br>قطع الغيار: "+esc(r.parts):"")+"</div></div><button class=\"btn g\" onclick=\"pd('ok')\">موافق على السعر</button><button class=\"btn s\" onclick=\"pd('no')\">رفض السعر</button>"}
+else if(r.priceSet){h+="<div class=terms><h3>الموافقة على السعر</h3><div style=line-height:1.8>السعر المقترح للإصلاح: <b class=price>"+esc(r.price)+"</b>"+(r.parts?"<br>قطع الغيار: "+esc(r.parts):"")+"</div></div>"+(r.preview?"":"<button class=\"btn g\" onclick=\"pd('ok')\">موافق على السعر</button><button class=\"btn s\" onclick=\"pd('no')\">رفض السعر</button>")}
 o.innerHTML=h}
-function ap(){if(!$("a").checked){alert("لازم تعلّم على الموافقة");return}api("approve",{code:REF}).then(function(){byRef(REF)})}
-function pd(d){api("pricedecision",{code:REF,d:d}).then(function(){byRef(REF)})}
+function ap(){if(PREV)return;if(!$("a").checked){alert("لازم تعلّم على الموافقة");return}api("approve",{code:REF}).then(function(){byRef(REF)})}
+function pd(d){if(PREV)return;api("pricedecision",{code:REF,d:d}).then(function(){byRef(REF)})}
 var m=location.search.match(/code=(\d+)/);if(m){$("c").value=m[1]}if($("c").value)go();
 
 </script></body>
