@@ -48,8 +48,8 @@ label{display:block;margin-top:14px;font-size:15px}
 <label>الحالة<input type=text id=f_status list=stl></label><datalist id=stl><option value="تحت الفحص"><option value="بتتصلح"><option value="مستني قطعة غيار"><option value="جاهز للاستلام"><option value="تم التسليم"><option value="طلب جديد"><option value="تم تحديد الميعاد"><option value="في الطريق"><option value="تمت المعاينة"><option value="تم الإصلاح"><option value="تم الإلغاء"></datalist>
 <label>السعر (جنيه)<input type=tel id=f_price></label><label>المدفوع (جنيه)<input type=tel id=f_paid></label>
 <label>قطع الغيار<textarea id=f_parts rows=2></textarea></label><label>ملاحظات<textarea id=f_notes rows=3></textarea></label>
-<button class="btn" onclick="saveC()">حفظ</button><button class="btn s" onclick="$('ed').style.display='none'">إلغاء</button><div id=es class=err></div></div>
-<div class=card id=up style="display:none"><div id=ut style="font-weight:bold"></div>
+<button class="btn" onclick="saveC()">حفظ</button><button class="btn" style="background:#1E7B5A" onclick="photoFromForm()">📷 إضافة صور للعميل ده</button><button class="btn s" onclick="$('ed').style.display='none'">إلغاء</button><div id=es class=err></div></div>
+<div class=card id=up style="display:none;border:2px solid #1E7B5A"><div id=ut style="font-weight:bold"></div>
 <label>نوع الصورة<select id=ty></select></label>
 <label>اختار الصور<input type=file id=fi accept="image/*" multiple style="width:100%;margin-top:6px"></label>
 <button class="btn" onclick="upload()">رفع</button><div id=us class=err style="color:#555"></div><div id=pl></div></div>
@@ -62,7 +62,7 @@ label{display:block;margin-top:14px;font-size:15px}
 <div class=ft>العنوان: سيتي مول (بجانب المدرسة العسكرية - مدينة المستقبل - الشروق)<br>التليفون: 01555481669 - 01143453966 - 01036663344</div>
 </div>
 <script>
-var LABELS={device:"صورة الجهاز",fault:"صورة العطل",part:"صورة القطعة",before:"قبل الإصلاح",after:"بعد الإصلاح"};
+var LABELS={device:"صورة الجهاز",fault:"صورة العطل",part:"صورة القطعة",before:"قبل الإصلاح",during:"أثناء الإصلاح",after:"بعد الإصلاح"};
 function esc(t){var d=document.createElement("div");d.textContent=t==null?"":t;return d.innerHTML}
 function $(i){return document.getElementById(i)}
 
@@ -81,13 +81,15 @@ $("list").innerHTML=idx.length?idx.map(function(i){var c=l[i];var dp=c.dups&&c.d
 function canc(code,on){if(on&&!confirm("تعليم الطلب ده ملغي وإخفاؤه من القايمة؟ (مش بيتمسح)"))return;call("cancel",[TOK,code,!!on]).then(function(r){if(sess(r))load()})}
 function pick(i){var code=LIST[i].code,name=LIST[i].name;CUR=code;$("up").style.display="block";$("ut").textContent="صور العميل: "+name+" ("+code+")";
 $("ty").innerHTML=Object.keys(LABELS).map(function(k){return "<option value="+k+">"+LABELS[k]+"</option>"}).join("");load();photos();$("up").scrollIntoView({behavior:"smooth"})}
+function pickCode(code,cb){for(var i=0;i<LIST.length;i++){if(String(LIST[i].code)==String(code)){pick(i);return true}}return false}
+function photoFromForm(){if(!EC){$("es").style.color="";$("es").textContent="احفظ بيانات العميل الأول وبعدين هتلاقي خانة رفع الصور";return}$("ed").style.display="none";pickCode(EC)}
 function photos(){$("pl").innerHTML="";call("photos",[TOK,CUR]).then(function(r){if(!sess(r))return;
 $("pl").innerHTML=(r.r||[]).map(function(p){return "<div class=ph><h4>"+LABELS[p.type]+"</h4><div class=grid><div><img src='"+p.data+"'><button class=x onclick=\"del('"+p.id+"')\">x</button></div></div></div>"}).join("")})}
 function del(id){if(!confirm("مسح الصورة؟"))return;call("del",[TOK,id]).then(function(r){if(sess(r))photos()})}
 function shrink(file,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var m=1000,s=Math.min(1,m/Math.max(im.width,im.height));var c=document.createElement("canvas");c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext("2d").drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",0.72))};im.src=r.result};r.readAsDataURL(file)}
 function upload(){var fs=$("fi").files;if(!CUR||!fs.length){$("us").textContent="اختار صور";return}
-var i=0,t=$("ty").value;(function next(){if(i>=fs.length){$("us").textContent="تم رفع "+fs.length+" صور";$("fi").value="";photos();return}
-$("us").textContent="جاري رفع "+(i+1)+" من "+fs.length;
+var i=0,t=$("ty").value;(function next(){if(i>=fs.length){$("us").style.color="#1E7B5A";$("us").style.fontWeight="bold";$("us").textContent="✅ تم رفع "+fs.length+" صورة بنجاح";$("fi").value="";photos();return}
+$("us").style.color="#555";$("us").textContent="جاري رفع "+(i+1)+" من "+fs.length;
 shrink(fs[i++],function(d){call("upload",[TOK,CUR,t,d]).then(function(r){if(!sess(r))return;if(r&&r.error){$("us").textContent=r.error;return}next()}).catch(function(){$("us").textContent="فشل الرفع"})})})()}
 function logout(){call("logout",[TOK]).then(function(){localStorage.removeItem("ar_tok");TOK=null;showLogin("")}).catch(function(){localStorage.removeItem("ar_tok");showLogin("")})}
 function revokeAll(){if(!confirm("تخرج من كل الأجهزة؟"))return;call("revokeall",[TOK]).then(function(){localStorage.removeItem("ar_tok");TOK=null;showLogin("تم الخروج من كل الأجهزة")})}
@@ -96,7 +98,7 @@ function editC(code){EC=code;$("es").textContent="";$("ed").style.display="block
 FF.forEach(function(k){$("f_"+k).value=""});$("vrow").style.display="none";if(!code){$("f_status").value="تحت الفحص";$("ed").scrollIntoView({behavior:"smooth"});return}
 call("get",[TOK,code]).then(function(r){if(!sess(r))return;r=r.r;if(!r||r.error){$("es").textContent="حصل خطأ";return}FF.forEach(function(k){$("f_"+k).value=r[k]||""});$("vrow").style.display=r.visit?"block":"none";$("ed").scrollIntoView({behavior:"smooth"})})}
 function saveC(){var d={};FF.forEach(function(k){d[k]=$("f_"+k).value});$("es").style.color="#555";$("es").textContent="جاري الحفظ...";
-call("save",[TOK,EC,d]).then(function(r){if(!sess(r))return;if(r.error){$("es").style.color="";$("es").textContent=r.error;return}$("ed").style.display="none";load()}).catch(function(){$("es").style.color="";$("es").textContent="فشل الحفظ، حاول تاني"})}
+call("save",[TOK,EC,d]).then(function(r){if(!sess(r))return;if(r.error){$("es").style.color="";$("es").textContent=r.error;return}var nm=d.name,ph=d.phone,ec=EC;$("ed").style.display="none";$("us").textContent="";call("list",[TOK]).then(function(x){if(!sess(x))return;LIST=x.r||[];render();var code=ec||(r.code)||(r.r&&r.r.code);if(!code){for(var i=LIST.length-1;i>=0;i--){if(LIST[i].name==nm&&norm(LIST[i].phone)==norm(ph)){code=LIST[i].code}}}if(code){pickCode(code);$("us").style.color="#1E7B5A";$("us").textContent="تم حفظ العميل ✅ ضيف الصور من هنا"}})}).catch(function(){$("es").style.color="";$("es").textContent="فشل الحفظ، حاول تاني"})}
 function loadAds(){call("adlist",[TOK]).then(function(r){if(!sess(r))return;var l=r.r||[];$("adl").innerHTML=l.length?l.map(function(a){return "<div class=cu><b>"+esc(a.title||"(بدون عنوان)")+"</b><small>"+esc(a.date)+" | "+esc(a.type||"رابط")+(a.visible?"":" | مخفي")+"</small><button class='btn s' onclick='adVis("+a.row+","+(a.visible?0:1)+")'>"+(a.visible?"إخفاء":"إظهار")+"</button><button class='btn s' onclick='adDel("+a.row+")'>مسح</button></div>"}).join(""):"مفيش إعلانات"})}
 function adVis(r,v){call("adset",[TOK,r,!!v]).then(function(x){if(sess(x))loadAds()})}
 function adDel(r){if(!confirm("مسح الإعلان نهائي؟"))return;call("addel",[TOK,r]).then(function(x){if(sess(x))loadAds()})}
